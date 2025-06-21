@@ -22,11 +22,8 @@ def view(sort_by: str = Query(None, description= 'Sort on the basis of height, w
     data = load_data()
     if sort_by is None and order is not None:
         sorted_order = True if order == 'desc' else False
-        sorted_data = [data[key] for key in sorted(data.keys(), reverse=sorted_order)]
+        sorted_data = {key: data[key] for key in sorted(data.keys(), reverse=sorted_order)}
         return sorted_data
-    
-    elif sort_by is None:
-        return data
     
     else:
         if sort_by not in valid_fileds:
@@ -34,11 +31,9 @@ def view(sort_by: str = Query(None, description= 'Sort on the basis of height, w
         if order not in ['asc', 'desc']:
             raise HTTPException(status_code= 400, detail= 'Invalid order select between asc or desc')
         
-        data = load_data()
-        
         sorted_order = True if order == 'desc' else False
         
-        sorted_data = sorted(data.values(), key= lambda x:x.get(sort_by, 0), reverse= sorted_order)        
+        sorted_data = sorted(data.values(), key= lambda x:x.get(sort_by, 0), reverse= sorted_order)  
             
         return sorted_data
     
@@ -49,4 +44,4 @@ def view_patient(patient_id: str = Path(..., description= 'Id of the patient in 
     
     if patient_id in data:
         return data[patient_id]
-    raise HTTPException(status_code= 404, detail= 'Patient not found')
+    raise HTTPException(status_code= 404, detail= 'Patient not Found')
