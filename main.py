@@ -17,11 +17,17 @@ def about():
     return {'message': 'This is the about page'}
 
 @app.get('/view')
-def view(sort_by: str = Query(None, description= 'Sort on the basis of height, weight, BMI'), order: str = Query('asc', description= 'asc or desc')):
+def view(sort_by: str = Query(None, description= 'Sort on the basis of height, weight, BMI'), order: str = Query('desc', description= 'asc or desc')):
     valid_fileds = ['height', 'weight', 'bmi']
     data = load_data()
-    if sort_by is None:
+    if sort_by is None and order is not None:
+        sorted_order = True if order == 'desc' else False
+        sorted_data = [data[key] for key in sorted(data.keys(), reverse=sorted_order)]
+        return sorted_data
+    
+    elif sort_by is None:
         return data
+    
     else:
         if sort_by not in valid_fileds:
             raise HTTPException(status_code= 400, detail= f'Invalid Field select form {valid_fileds} ')
