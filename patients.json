@@ -39,7 +39,6 @@
         "bmi": 17.58,
         "verdict": "Underweight"
     },
-
     "P005": {
         "name": "Neha Sinha",
         "city": "Kolkata",
@@ -48,6 +47,16 @@
         "height": 1.55,
         "weight": 75,
         "bmi": 31.22,
+        "verdict": "Obese"
+    },
+    "P006": {
+        "name": "Shivansh",
+        "city": "Banswara",
+        "age": 24,
+        "gender": "male",
+        "height": 1.74,
+        "weight": 80.0,
+        "bmi": 26.42,
         "verdict": "Obese"
     }
 }
