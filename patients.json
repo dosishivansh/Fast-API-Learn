@@ -54,9 +54,9 @@
         "city": "Banswara",
         "age": 24,
         "gender": "male",
-        "height": 1.74,
+        "height": 1.8,
         "weight": 80.0,
-        "bmi": 26.42,
-        "verdict": "Obese"
+        "bmi": 24.69,
+        "verdict": "Healthy"
     }
 }

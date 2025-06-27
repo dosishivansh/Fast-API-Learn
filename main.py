@@ -15,24 +15,33 @@ class Patient(BaseModel):
     height: Annotated[float, Field(gt= 0, description= 'height of the patient in mtrs', strict= True)]
     weight: Annotated[float, Field(gt= 0, description= 'weight of the patient in kgs', strict= True)]
     
+
+            
     @computed_field
     @property
     def bmi(self) -> float:
         bmi = round(self.weight/(self.height)**2,2)
         return bmi
-    
+
     @computed_field
     @property
     def verdict(self) -> str:
         if self.bmi < 18.5:
             return 'Underweight'
-        elif 18.5 >= self.bmi > 24.9:
+        elif self.bmi < 24.9:
             return 'Healthy'
-        elif 25 >= self.bmi > 29.9:
+        elif self.bmi < 29.9:
             return 'Overweight'
         else:
             return 'Obese'
         
+class UpdatePatient(BaseModel):
+    name : Annotated[Optional[str], Field(default= None)]
+    city: Annotated[Optional[str], Field(default= None)]
+    age: Annotated[Optional[int], Field(default= None)]
+    gender: Annotated[Optional[Literal['male', 'female', 'others']], Field(default= None)]
+    height: Annotated[Optional[float], Field(default= None, gt= 0, strict= True)]
+    weight: Annotated[Optional[float], Field(default= None, gt= 0, strict= True)]
 
 def load_data():
     with open('patients.json', mode='r') as f:
@@ -97,3 +106,41 @@ def create_patient(patient: Patient):
     save_data(data)
     
     return JSONResponse(status_code= 201, content= {'message': 'Patient created successfully'})
+
+@app.put('/edit/{patient_id}')
+def update_patient(patient_id: str, patient_update: UpdatePatient):
+    data = load_data()
+    
+    if patient_id not in data:
+        raise HTTPException(status_code= 404, detail= 'Patient not found')
+    
+    existing_patient = data[patient_id]
+    
+    updated_patient = patient_update.model_dump(exclude_unset= True)
+    
+    for key, value in updated_patient.items():
+        existing_patient[key] = value
+    
+    existing_patient['id'] = patient_id
+    
+    patient_pydantic_object = Patient(**existing_patient)
+    
+    existing_patient = patient_pydantic_object.model_dump(exclude= 'id')
+    
+    data[patient_id] = existing_patient
+    
+    save_data(data)
+    
+    return JSONResponse(status_code= 201, content= 'Patient Info successfully updated')
+
+@app.delete('/delete/{patient_id}')
+def delete_patient(patient_id: str):
+    data = load_data()
+    
+    if patient_id not in data:
+        raise HTTPException(status_code= 404, detail= 'Patient not found')
+    
+    del data[patient_id]
+    save_data(data)
+    
+    return JSONResponse(status_code= 201, content= 'Patient deleted successfully')
